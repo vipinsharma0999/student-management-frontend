@@ -1,24 +1,25 @@
 'use client';
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, Users, UserPlus, GraduationCap,
-  ChevronRight, Sparkles,
+  ChevronRight, Sparkles, Menu, X,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
 const navItems = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/students', label: 'All Students', icon: Users },
-  { href: '/students/new', label: 'Add Student', icon: UserPlus },
+  { href: '/',             label: 'Dashboard',   icon: LayoutDashboard },
+  { href: '/students',     label: 'All Students', icon: Users },
+  { href: '/students/new', label: 'Add Student',  icon: UserPlus },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
 
-  return (
-    <aside className="w-64 shrink-0 bg-surface-card border-r border-surface-border flex flex-col h-screen sticky top-0 overflow-hidden">
-      
+  const NavContent = () => (
+    <>
       {/* Logo */}
       <div className="px-6 py-6 border-b border-surface-border">
         <div className="flex items-center gap-3">
@@ -38,16 +39,13 @@ export default function Sidebar() {
         <p className="text-xs font-semibold text-slate-600 uppercase tracking-widest px-3 mb-3">
           Navigation
         </p>
-
         {navItems.map(({ href, label, icon: Icon }) => {
-          
-          // ✅ STRICT MATCH ONLY (FINAL FIX)
           const active = pathname === href;
-
           return (
             <Link
               key={href}
               href={href}
+              onClick={() => setOpen(false)}
               className={clsx(
                 'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group',
                 active
@@ -55,14 +53,7 @@ export default function Sidebar() {
                   : 'text-slate-400 hover:text-white hover:bg-surface-muted',
               )}
             >
-              <Icon
-                className={clsx(
-                  'w-4 h-4 shrink-0 transition-colors',
-                  active
-                    ? 'text-brand-400'
-                    : 'text-slate-500 group-hover:text-slate-300'
-                )}
-              />
+              <Icon className={clsx('w-4 h-4 shrink-0 transition-colors', active ? 'text-brand-400' : 'text-slate-500 group-hover:text-slate-300')} />
               <span className="flex-1">{label}</span>
               {active && <ChevronRight className="w-3 h-3 text-brand-400" />}
             </Link>
@@ -86,6 +77,47 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* ── Mobile top navbar ── */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-surface-card border-b border-surface-border flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center">
+            <GraduationCap className="w-4 h-4 text-white" />
+          </div>
+          <p className="font-display font-bold text-white text-sm">EduManage Pro</p>
+        </div>
+        <button
+          onClick={() => setOpen(!open)}
+          className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-surface-muted transition-colors"
+        >
+          {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+      </div>
+
+      {/* ── Mobile drawer backdrop ── */}
+      {open && (
+        <div
+          className="md:hidden fixed inset-0 z-30 bg-black/60 backdrop-blur-sm"
+          onClick={() => setOpen(false)}
+        />
+      )}
+
+      {/* ── Mobile drawer ── */}
+      <aside className={clsx(
+        'md:hidden fixed top-0 left-0 z-40 h-full w-72 bg-surface-card border-r border-surface-border flex flex-col transition-transform duration-300',
+        open ? 'translate-x-0' : '-translate-x-full'
+      )}>
+        <NavContent />
+      </aside>
+
+      {/* ── Desktop sidebar ── */}
+      <aside className="hidden md:flex w-64 shrink-0 bg-surface-card border-r border-surface-border flex-col h-screen sticky top-0 overflow-hidden">
+        <NavContent />
+      </aside>
+    </>
   );
 }

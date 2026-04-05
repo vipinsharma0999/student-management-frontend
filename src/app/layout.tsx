@@ -4,9 +4,9 @@ import { Toaster } from 'react-hot-toast';
 import Sidebar from '@/components/layout/Sidebar';
 import '@/styles/globals.css';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const sora = Sora({ subsets: ['latin'], variable: '--font-sora' });
-const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains' });
+const inter      = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const sora       = Sora({ subsets: ['latin'], variable: '--font-sora' });
+const jetbrains  = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains' });
 
 export const metadata: Metadata = {
   title: 'EduManage Pro — Student Management System',
@@ -24,7 +24,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <div className="flex min-h-screen relative z-10">
           <Sidebar />
-          <main className="flex-1 overflow-auto">{children}</main>
+          {/* pt-14 on mobile to clear the fixed top navbar, md:pt-0 on desktop */}
+          <main className="flex-1 overflow-auto pt-14 md:pt-0">
+            {children}
+          </main>
         </div>
 
         <Toaster
